@@ -1,1 +1,0 @@
-# Gereltuya.V.uran.setgemj.io
