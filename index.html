@@ -1,0 +1,846 @@
+<!doctype html>
+<html lang="mn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Уран сэтгэмжээ хөгжүүлье — Үлгэрийн цех</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Montserrat:wght@400;500;600;700;800&display=swap">
+<style>
+:root{
+  --night:#0d0828; --ind:#1e1452; --vio:#3b2683; --vio2:#5a3fb0; --vio3:#7c5fd6;
+  --gold:#f6c945; --gold-d:#c7951a; --gold-l:#ffe9a3;
+  --parch:#fbf2d9; --parch2:#f3e3b8; --edge:#d9bf80; --ink:#2a1d45; --muted:#6b5a85;
+  --real:#1f8f82; --real-soft:#d3f1ec; --magic:#8a3ff0; --magic-soft:#eee1ff;
+  --rose:#e2557f; --ok:#1d8f52; --ok-soft:#dcf5e6; --no:#d23f5a; --no-soft:#ffe3e8;
+  --deco:"Marck Script","Segoe Script",cursive;
+  --body:"Montserrat","Segoe UI",system-ui,sans-serif;
+  --emo:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif;
+  --shadow:0 12px 30px rgba(5,2,20,.45);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:var(--body);font-size:20px;line-height:1.4;color:#f4eeff;overflow:hidden;
+  background:radial-gradient(ellipse at 75% -10%,#4a2f97 0%,#22165c 38%,#0d0828 100%) fixed;background-color:var(--night)}
+button{font:inherit;cursor:pointer}
+#sky{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+/* ===== Header ===== */
+.top{position:fixed;inset:0 0 auto 0;height:56px;z-index:20;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;padding:0 16px;
+  background:rgba(13,8,40,.88);border-bottom:3px solid var(--gold);box-shadow:0 4px 18px rgba(0,0,0,.4)}
+.top .lbl{display:block;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#b9a8ec}
+.top .val{font-weight:700;font-size:18px;white-space:nowrap}
+.top .mid{min-width:0;overflow:hidden;border-left:1px solid rgba(246,201,69,.35);padding-left:14px}
+.top .mid .val{font-family:var(--deco);font-weight:400;font-size:27px;color:var(--gold);overflow:hidden;text-overflow:ellipsis;display:block;line-height:1.1}
+.tools{display:flex;align-items:center;gap:8px}
+.timer{font-weight:800;font-size:22px;font-variant-numeric:tabular-nums;color:var(--gold);cursor:pointer;user-select:none}
+.timer.warn{color:#ff9f43}.timer.over{color:#ff7d93}
+.tbtn{border:1.5px solid rgba(246,201,69,.5);background:transparent;color:#fff;border-radius:8px;padding:3px 10px;font-weight:700;font-size:15px}
+.tbtn:hover{background:rgba(246,201,69,.15)}
+
+/* ===== Deck ===== */
+.deck{position:absolute;inset:62px 0 60px 0;z-index:1}
+.slide{position:absolute;inset:0;overflow:auto;padding:6px clamp(16px,3vw,44px) 10px;opacity:0;visibility:hidden;transform:translateY(16px);transition:opacity .4s,transform .4s,visibility .4s}
+.slide.active{opacity:1;visibility:visible;transform:none}
+.inner{max-width:1280px;margin:0 auto;height:100%;display:flex;flex-direction:column}
+.shead{display:flex;align-items:center;gap:14px;margin:0 0 8px;flex-wrap:wrap}
+.tag{font-size:13px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink);background:var(--gold);padding:3px 12px;border-radius:999px;white-space:nowrap}
+h2{font-family:var(--deco);font-weight:400;font-size:44px;line-height:1.05;margin:0;color:var(--gold);text-shadow:0 0 18px rgba(246,201,69,.35)}
+h3{margin:0 0 6px;font-size:21px;font-weight:800}
+.src{margin-left:auto;font-size:15px;font-weight:700;color:var(--ink);background:var(--parch);border:2px solid var(--edge);padding:3px 12px;border-radius:8px;white-space:nowrap}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;flex:1;min-height:0}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.parch{background:linear-gradient(160deg,#fff8e6,var(--parch) 45%,var(--parch2));color:var(--ink);border:2px solid var(--edge);border-radius:14px;padding:14px 18px;box-shadow:var(--shadow);position:relative}
+.glass{background:rgba(255,255,255,.07);border:1.5px solid rgba(246,201,69,.45);border-radius:14px;padding:12px 16px;box-shadow:var(--shadow)}
+.btn{border:none;border-radius:12px;padding:10px 18px;font-weight:800;background:var(--vio2);color:#fff;box-shadow:0 4px 0 #2c1c6b;transition:transform .1s,filter .15s}
+.btn:hover{filter:brightness(1.12)}.btn:active{transform:translateY(2px);box-shadow:0 2px 0 #2c1c6b}
+.btn[disabled]{opacity:.45;cursor:default}
+.btn.gold{background:var(--gold);color:var(--ink);box-shadow:0 4px 0 var(--gold-d)}
+.btn.real{background:var(--real);box-shadow:0 4px 0 #126158}
+.btn.magic{background:var(--magic);box-shadow:0 4px 0 #5a1fb0}
+.btn.ghost{background:transparent;color:inherit;border:2px solid rgba(246,201,69,.55);box-shadow:none}
+.parch .btn.ghost{border-color:var(--edge);color:var(--ink)}
+.btn.sm{padding:6px 12px;font-size:16px;border-radius:10px}
+.btn.big{font-size:24px;padding:12px 28px}
+.feedback{font-weight:700;min-height:28px;margin-top:8px;font-size:19px}
+.feedback.ok{color:var(--ok)}.feedback.no{color:var(--no)}
+.glass .feedback.ok{color:#7ff0b0}.glass .feedback.no{color:#ff9fb0}
+.muted{color:var(--muted)}
+.shake{animation:shake .45s}
+@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.pop{animation:pop .5s}
+@keyframes pop{0%{transform:scale(.6);opacity:.3}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+
+/* ===== Nav ===== */
+.nav{position:fixed;inset:auto 0 0 0;height:56px;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 16px;background:rgba(13,8,40,.88);border-top:3px solid var(--gold)}
+.nav .btn{padding:7px 16px;font-size:17px}
+.dots{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.dot{width:36px;height:36px;border:none;background:none;color:#b9a8ec;font-weight:800;font-size:13px;position:relative;padding:0}
+.dot::before{content:"★";position:absolute;inset:0;font-size:34px;line-height:36px;color:rgba(255,255,255,.18);transition:.25s}
+.dot span{position:relative;top:2px}
+.dot.done::before{color:rgba(246,201,69,.45)}
+.dot.on::before{color:var(--gold);text-shadow:0 0 12px var(--gold)}
+.dot.on{color:var(--ink)}
+.tnotes{position:fixed;right:16px;bottom:68px;width:min(440px,calc(100vw - 32px));background:#fffbe8;color:#2a1d45;border:2px solid var(--gold);border-radius:12px;padding:12px 16px;font-size:16px;box-shadow:var(--shadow);z-index:30;display:none;max-height:calc(100vh - 140px);overflow:auto}
+.tnotes.show{display:block}
+.tnotes h4{margin:0 0 6px;font-size:17px}
+.tnotes ul{margin:0;padding-left:20px}.tnotes li{margin:3px 0}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:50}
+
+/* ===== 1. Cover ===== */
+.coverWrap{flex:1;display:flex;align-items:center;justify-content:center;min-height:0}
+.cover{position:relative;width:min(900px,96%);height:min(520px,calc(100vh - 150px));border-radius:10px 26px 26px 10px;padding:26px 40px 22px 72px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  background:radial-gradient(circle at 70% 20%,#6a4bc9 0%,#3b2683 45%,#22165c 100%);box-shadow:inset 30px 0 0 #170e45,inset 34px 0 0 rgba(246,201,69,.6),0 24px 60px rgba(0,0,0,.6)}
+.cover::after{content:"";position:absolute;inset:14px 14px 14px 50px;border:3px solid var(--gold);border-radius:6px 18px 18px 6px;pointer-events:none;box-shadow:inset 0 0 0 6px rgba(246,201,69,.15)}
+.cover .orn{position:absolute;color:var(--gold);font-size:30px;line-height:1}
+.cover .school{font-weight:800;font-size:20px;background:rgba(13,8,40,.5);border:1.5px solid var(--gold);padding:4px 18px;border-radius:999px}
+.cover .subject{font-family:var(--deco);font-size:clamp(64px,8.4vw,108px);line-height:1;color:var(--gold);text-shadow:0 0 30px rgba(246,201,69,.5),0 4px 0 #1a1048}
+.cover .chap{font-size:clamp(24px,2.8vw,36px);font-weight:800;color:#fff;letter-spacing:.5px}
+.cover .sub2{font-size:19px;color:var(--gold-l);font-weight:600}
+.cover .teacher{margin-top:8px;font-size:22px;font-weight:700;background:var(--parch);color:var(--ink);padding:6px 22px;border-radius:10px;border:2px solid var(--edge)}
+.cover svg{width:170px;height:auto}
+.twinkle{animation:tw 2.4s infinite ease-in-out}
+@keyframes tw{50%{opacity:.25;transform:scale(.7)}}
+
+/* ===== 2. Door ===== */
+.cbox{border-radius:14px;overflow:hidden;box-shadow:var(--shadow);border:2px solid rgba(246,201,69,.5);background:#120b36;display:flex;flex-direction:column}
+.cbox canvas{display:block;width:100%;height:auto;max-height:calc(100vh - 250px);object-fit:contain;cursor:pointer}
+.cbox .ctrl{display:flex;gap:10px;justify-content:center;padding:8px;background:rgba(13,8,40,.9)}
+.defs h3{font-size:22px;margin:0}
+.defs p{margin:2px 0 8px;font-size:19px}
+.defs .d{padding:6px 12px;border-radius:10px;margin-bottom:6px}
+.defs .d.r{background:var(--real-soft);border-left:6px solid var(--real)}
+.defs .d.m{background:var(--magic-soft);border-left:6px solid var(--magic)}
+.defs .veil{transition:filter .6s,opacity .6s}
+.defs:not(.show) .veil{filter:blur(6px);opacity:.5}
+.pw{font-size:60px;text-align:center;line-height:1.1;font-family:var(--emo)}
+.pwq{text-align:center;font-weight:700;min-height:54px;font-size:20px}
+.pwq b{color:var(--gold)}
+
+/* ===== 3. Reading ===== */
+.flips{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:12px;min-height:0}
+.flip{perspective:1200px;cursor:pointer;min-height:150px}
+.flip .fin{position:relative;width:100%;height:100%;transition:transform .7s;transform-style:preserve-3d}
+.flip.on .fin{transform:rotateY(180deg)}
+.flip .face{position:absolute;inset:0;-webkit-backface-visibility:hidden;backface-visibility:hidden;border-radius:14px;padding:12px 16px;display:flex;flex-direction:column;box-shadow:var(--shadow)}
+.flip .front{background:linear-gradient(150deg,#4d33a8,#2a1b6e);border:2px solid var(--gold);align-items:center;justify-content:center;text-align:center;gap:4px}
+.flip .front .e{font-size:50px;font-family:var(--emo);line-height:1}
+.flip .front .t{font-weight:800;font-size:20px}
+.flip .front .p{font-size:14px;color:var(--gold-l)}
+.flip .back{transform:rotateY(180deg);background:var(--parch);color:var(--ink);border:2px solid var(--edge);font-size:17.5px;line-height:1.38;overflow:auto}
+.flip .back b{color:var(--vio)}
+.calcq{font-size:30px;font-weight:800;text-align:center;color:var(--ink);margin:4px 0}
+.calcq input{width:90px;font:inherit;font-size:30px;text-align:center;border:3px solid var(--edge);border-radius:10px;padding:0 4px;background:#fff;color:var(--ink)}
+.calcq input.ok{border-color:var(--ok);background:var(--ok-soft)}.calcq input.no{border-color:var(--no);background:var(--no-soft)}
+.gloss{display:flex;gap:8px;flex-wrap:wrap}
+.gl{background:#fff;border:2px dashed var(--edge);border-radius:10px;padding:5px 12px;font-weight:700;cursor:pointer;font-size:18px;color:var(--ink)}
+.gl i{display:none;font-style:normal;font-weight:500;color:var(--vio)}
+.gl.on{border-style:solid;border-color:var(--vio3)}.gl.on i{display:inline}
+.qs{margin:4px 0 0;padding-left:22px;font-size:18px}
+
+/* ===== 4. Sort ===== */
+.sortg{display:grid;grid-template-columns:1fr 1.25fr 1fr;gap:14px;flex:1;min-height:0}
+.basket{border-radius:16px;padding:10px 12px;display:flex;flex-direction:column;min-height:0;cursor:pointer;transition:transform .15s,box-shadow .15s;border:3px dashed}
+.basket.r{background:rgba(31,143,130,.18);border-color:#4fd1bf}
+.basket.m{background:rgba(138,63,240,.2);border-color:#c39bff}
+.basket.hot{transform:scale(1.02);box-shadow:0 0 0 4px var(--gold)}
+.basket h3{text-align:center;font-size:24px;margin-bottom:2px}
+.basket .bs{text-align:center;font-size:15px;color:#ddd3ff;margin-bottom:6px}
+.basket .list{display:flex;flex-wrap:wrap;gap:6px;align-content:flex-start;overflow:auto;flex:1}
+.pool{display:flex;flex-wrap:wrap;gap:9px;align-content:flex-start;justify-content:center;padding:6px}
+.chip{background:var(--parch);color:var(--ink);border:2px solid var(--edge);border-radius:12px;padding:7px 12px;font-weight:700;font-size:18px;cursor:grab;box-shadow:0 4px 10px rgba(0,0,0,.3);user-select:none;transition:transform .12s}
+.chip .e{font-family:var(--emo)}
+.chip:hover{transform:translateY(-2px)}
+.chip.sel{outline:4px solid var(--gold);transform:scale(1.05)}
+.list .chip{font-size:15px;padding:4px 9px;cursor:default;box-shadow:none}
+.list .chip.okc{border-color:var(--ok);background:var(--ok-soft)}
+.score{font-weight:800;color:var(--gold);font-size:20px}
+.whyBox{background:rgba(13,8,40,.55);border-radius:12px;padding:8px 14px;min-height:46px}
+
+/* ===== 5. Mountain ===== */
+.mtn{position:relative;height:clamp(250px,47vh,340px);flex:none}
+.mtn svg{position:absolute;inset:0;width:100%;height:100%}
+.slot{position:absolute;width:18.6%;min-height:96px;background:rgba(13,8,40,.62);border:2.5px dashed rgba(246,201,69,.7);border-radius:14px;padding:5px 8px;cursor:pointer;transition:.2s}
+.slot:hover{background:rgba(59,38,131,.85)}
+.slot .sl{font-weight:800;font-size:18px;color:var(--gold);text-align:center}
+.slot .sc{font-size:16px;line-height:1.3;color:#fff}
+.slot.fill{border-style:solid;border-color:var(--ok);background:rgba(29,143,82,.32)}
+.slot .g3{display:none;font-size:13px;font-weight:800;color:var(--ink);background:var(--gold);border-radius:6px;padding:0 6px;margin:2px auto 0;width:max-content}
+.mtn.done .slot .g3{display:block}
+.band{flex:1;min-height:0;display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.mpool{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.mcard{width:calc(20% - 10px);min-width:180px;background:var(--parch);color:var(--ink);border:2px solid var(--edge);border-radius:12px;padding:7px 10px;font-weight:600;font-size:16.5px;line-height:1.3;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,.35)}
+.mcard.sel{outline:4px solid var(--gold);transform:translateY(-4px)}
+.lk{display:none;align-items:center;gap:14px;justify-content:center;flex-wrap:wrap}
+.lk.show{display:flex}
+.lkw{font-family:var(--deco);font-size:46px;color:var(--gold);min-width:260px;text-align:center}
+.lk .btn{min-width:130px}
+
+/* ===== 6. Dice ===== */
+.dice{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.die{display:flex;flex-direction:column;align-items:center;gap:8px}
+.die .dl{font-weight:800;font-size:19px;color:var(--gold-l)}
+.cube{width:100%;max-width:230px;aspect-ratio:1/0.9;background:linear-gradient(150deg,#fffaf0,var(--parch) 50%,var(--parch2));color:var(--ink);border-radius:22px;border:3px solid var(--gold);box-shadow:inset 0 -8px 0 rgba(0,0,0,.08),0 12px 26px rgba(0,0,0,.5);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:8px;position:relative}
+.cube .ce{font-size:64px;line-height:1.05;font-family:var(--emo)}
+.cube .cn{font-weight:800;font-size:19px;line-height:1.2}
+.cube.locked{border-color:var(--real);box-shadow:0 0 0 5px rgba(79,209,191,.5),0 12px 26px rgba(0,0,0,.5)}
+.cube.locked::after{content:"🔒";position:absolute;top:6px;right:8px;font-size:22px;font-family:var(--emo)}
+.cube.roll{animation:roll .9s ease-out}
+@keyframes roll{0%{transform:rotate(0) scale(1)}25%{transform:rotate(-200deg) scale(.8) translateY(-20px)}55%{transform:rotate(120deg) scale(1.05)}80%{transform:rotate(-15deg)}100%{transform:rotate(0) scale(1)}}
+.morals{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.moral{background:rgba(255,255,255,.08);border:2px solid rgba(246,201,69,.5);color:#fff;border-radius:999px;padding:5px 14px;font-weight:700;font-size:17px}
+.moral.on{background:var(--gold);color:var(--ink)}
+.seed{font-size:19px}
+.seed b{color:var(--vio)}
+
+/* ===== 7. Writer ===== */
+.wr{grid-template-columns:1.6fr .62fr}
+.wcard{display:flex;flex-direction:column;gap:6px;min-height:0;padding:10px 16px;
+  background-image:linear-gradient(160deg,#fff8e6,var(--parch) 45%,var(--parch2))}
+.wrow{display:grid;grid-template-columns:auto 1.4fr auto 1fr;gap:8px;align-items:center;font-weight:800;font-size:17px}
+.wrow input{font:inherit;font-weight:600;font-size:19px;padding:4px 10px;border:2px solid var(--edge);border-radius:8px;background:#fffdf6;color:var(--ink);min-width:0}
+.part .ph{display:flex;align-items:center;gap:8px;font-size:17px}
+.part .ph b{font-size:19px}
+.part .ph .hint{color:var(--muted);font-weight:600;font-size:15px}
+.part .ph .wc{margin-left:auto;font-weight:800;font-size:15px;background:#efe3c0;border-radius:999px;padding:1px 10px;white-space:nowrap}
+.part .ph .wc.good{background:var(--ok-soft);color:var(--ok)}
+.part textarea{width:100%;resize:none;font:inherit;font-size:19px;line-height:1.45;color:var(--ink);border:2px solid var(--edge);border-radius:10px;padding:5px 10px;
+  background:#fffdf6 repeating-linear-gradient(transparent 0 26.5px,rgba(199,149,26,.18) 26.5px 27.5px);outline:none}
+.part textarea:focus{border-color:var(--vio3);box-shadow:0 0 0 3px rgba(124,95,214,.25)}
+.mini{border:none;background:var(--vio2);color:#fff;border-radius:8px;padding:2px 10px;font-size:14px;font-weight:700}
+.links{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:15px}
+.links .lb{font-weight:800}
+.lchip{border:1.5px solid var(--edge);background:#fff;color:var(--ink);border-radius:999px;padding:2px 10px;font-size:15px;font-weight:700}
+.lchip.e0{border-color:#e0a200}.lchip.e1{border-color:var(--vio3)}.lchip.e2{border-color:var(--real)}
+.side{display:flex;flex-direction:column;gap:10px;min-height:0}
+.wdice{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:15px;margin-top:4px}
+.wdice div{background:rgba(255,255,255,.08);border-radius:8px;padding:3px 6px;line-height:1.2}
+.wdice .e{font-family:var(--emo);font-size:20px}
+.chk{list-style:none;margin:4px 0 0;padding:0;font-size:15.5px}
+.chk li{display:flex;gap:7px;align-items:flex-start;padding:3px 0;color:#d9cff7}
+.chk li .bx{flex:none;width:22px;height:22px;border-radius:6px;border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:14px}
+.chk li.ok{color:#fff}.chk li.ok .bx{background:var(--ok);border-color:var(--ok)}
+
+/* ===== Book spread (preview + gallery) ===== */
+.spread{display:grid;grid-template-columns:.8fr 1.2fr;background:linear-gradient(90deg,#5a3a14,#7a5220);padding:12px;border-radius:14px;box-shadow:var(--shadow);min-height:0}
+.pg{background:linear-gradient(90deg,var(--parch2),var(--parch) 12%,#fff9e9);color:var(--ink);padding:16px 22px;position:relative;min-height:0;display:flex;flex-direction:column}
+.pg.left{border-radius:8px 0 0 8px;background:linear-gradient(270deg,#e9d39c,var(--parch) 12%,#fff9e9);align-items:center;justify-content:center;text-align:center;gap:6px}
+.pg.right{border-radius:0 8px 8px 0}
+.pgscene{display:flex;align-items:flex-end;justify-content:center;gap:8px;font-family:var(--emo);font-size:46px;line-height:1;background:radial-gradient(circle at 50% 60%,#4d33a8,#22165c);border-radius:50%;width:min(230px,90%);aspect-ratio:1;padding-bottom:22%;box-shadow:inset 0 0 0 5px var(--gold),0 6px 16px rgba(0,0,0,.3);position:relative}
+.pgscene .big{font-size:76px}
+.pgscene::before{content:"✦  ✧  ✦";position:absolute;top:16%;left:0;right:0;font-size:20px;color:var(--gold);font-family:var(--body)}
+.pgtitle{font-family:var(--deco);font-size:38px;line-height:1.05;color:var(--vio)}
+.pgauth{font-weight:700;font-size:17px;color:var(--muted)}
+.pgmoral{font-size:15px;font-weight:800;background:var(--gold);border-radius:999px;padding:2px 12px}
+.pgtext{overflow:auto;flex:1;font-size:20px;line-height:1.5;padding-right:6px}
+.pgtext p{margin:0 0 8px;text-indent:1.4em}
+.pgtext p.first{text-indent:0}
+.pgtext p.first::first-letter{font-family:var(--deco);font-size:3.1em;float:left;line-height:.8;margin:6px 8px 0 0;color:var(--vio)}
+.pgno{text-align:center;color:var(--gold-d);font-weight:800;font-size:15px}
+.modal{position:fixed;inset:0;background:rgba(5,2,20,.75);z-index:40;display:none;align-items:center;justify-content:center;padding:20px}
+.modal.show{display:flex}
+.mbox{width:min(1100px,96vw);height:min(560px,calc(100vh - 60px));display:flex;flex-direction:column;gap:10px}
+.mbox .spread{flex:1}
+.gal{display:grid;grid-template-columns:1fr 290px;gap:16px;flex:1;min-height:0}
+.gal .spread{height:100%}
+.pager{display:flex;align-items:center;justify-content:space-between;gap:8px;font-weight:800;font-size:20px}
+.vote{text-align:center}
+.bigstar{font-size:46px;font-weight:800;color:var(--gold);line-height:1.1}
+.bigstar.bump{animation:pop .5s}
+.rub{font-size:14.5px}
+.rub .rr{margin:5px 0}
+.rub .rq{font-weight:700;color:#efe8ff}
+.rub .lv{display:flex;gap:4px;margin-top:2px}
+.rub .lv button{flex:1;border:1.5px solid rgba(246,201,69,.5);background:transparent;color:#fff;border-radius:7px;font-size:13px;font-weight:700;padding:2px 0}
+.rub .lv button.on{background:var(--gold);color:var(--ink)}
+.leader{font-size:15px;color:var(--gold-l);text-align:center;min-height:20px}
+
+/* ===== 9. Reflection ===== */
+.frames .fr{display:flex;align-items:baseline;gap:8px;margin:7px 0;font-weight:700;font-size:20px;flex-wrap:wrap}
+.frames .fr div[contenteditable]{flex:1;min-width:220px;border-bottom:2.5px dashed var(--vio3);outline:none;padding:2px 6px;font-weight:600;color:var(--vio)}
+.frames .fr div[contenteditable]:empty::before{content:attr(data-ph);color:#b4a7cf}
+.hintA{display:none;font-size:16px;background:var(--magic-soft);border-left:5px solid var(--magic);padding:6px 10px;border-radius:8px;margin-top:6px}
+.hintA.show{display:block}
+.moons .mr{display:flex;align-items:center;gap:10px;margin:6px 0;font-weight:700;font-size:17.5px}
+.moons .mr button{font-family:var(--emo);font-size:32px;background:none;border:none;padding:0;line-height:1;transition:transform .2s}
+.moons .mr button:hover{transform:scale(1.15)}
+.hw{background:var(--parch);color:var(--ink);border-radius:12px;padding:10px 14px;border:2px solid var(--edge);font-size:17px}
+.bye{font-family:var(--deco);font-size:38px;color:var(--gold);text-align:center;margin-top:6px;text-shadow:0 0 16px rgba(246,201,69,.4)}
+
+@media (max-height:900px){
+  body{font-size:18px}
+  h2{font-size:38px}
+  .shead{margin-bottom:6px}
+  .parch,.glass{padding:10px 14px}
+  .defs p{font-size:18px;margin-bottom:5px}
+  .flip .back{font-size:16.5px;padding:10px 13px}
+  .flip .front .e{font-size:40px}
+  .chip{font-size:17px;padding:6px 10px}
+  .cube .ce{font-size:52px}.cube .cn{font-size:18px}
+  .part textarea{font-size:18px}
+  .pgtext{font-size:19px}
+  .pgtitle{font-size:32px}
+  .pgscene{font-size:38px}.pgscene .big{font-size:62px}
+  .frames .fr{font-size:19px;margin:5px 0}
+  .bye{font-size:32px}
+  .calcq,.calcq input{font-size:26px}
+}
+@media (max-height:700px){
+  .cover{padding-top:14px;padding-bottom:14px}.cover svg{width:120px}
+  .flip .back{font-size:15px}
+  .mcard{font-size:15px}
+  .slot .sc{font-size:14.5px}
+  .cube{aspect-ratio:1/0.75}
+}
+@media (max-width:1000px){
+  .tools .hideS{display:none}
+  .grid2,.wr,.gal,.sortg{grid-template-columns:1fr !important}
+  .dice{grid-template-columns:1fr 1fr}
+  .flips{grid-template-columns:1fr}
+  .dots{display:none}
+  .slide{overflow:auto}
+  .inner{height:auto}
+  .mcard{width:calc(50% - 10px)}
+}
+</style>
+</head>
+<body>
+<canvas id="sky"></canvas>
+
+<header class="top">
+  <div><span class="lbl">Хичээл</span><span class="val">📖 Монгол хэл · 5-р анги</span></div>
+  <div class="mid"><span class="lbl">Үлгэрийн цех · <span id="sheetNo">Хуудас 1/9</span></span><span class="val" id="stageName"></span></div>
+  <div class="tools">
+    <span class="timer" id="timer" title="Хичээлийн үлдсэн хугацаа (2 удаа дарвал 40:00 болно)">⏱ <span id="tval">40:00</span></span>
+    <button class="tbtn" id="tPlay" title="Цаг эхлүүлэх / зогсоох">▶</button>
+    <button class="tbtn" id="notesBtn" title="Багшийн тэмдэглэл (N)">📝</button>
+    <button class="tbtn" id="fsBtn" title="Бүтэн дэлгэц (F)">⛶</button>
+  </div>
+</header>
+
+<main class="deck">
+
+<!-- 1. Танилцуулга -->
+<section class="slide" data-name="Танилцуулга" data-min="1"
+  data-notes="Мэндчилээд өнөөдрийн хичээлийг танилцуулна: «Монгол хэл V» сурах бичгийн 8-р бүлэг «Уран сэтгэмжээ хөгжүүлье» (х.93–104).|Өнөөдөр анги маань «Үлгэрийн цех» болно: Шидэт хаалга → Уншлага → Бодит уу, зохиомол уу? → Үлгэрийн уул → Үлгэрийн шоо → Үлгэр зохиох → Үлгэрийн цаг → Дүгнэлт.|Дээд талын ▶ товчоор 40 минутын цагийг эхлүүлнэ (цаг дээр 2 удаа дарвал дахин 40:00 болно). Товчлуур: ←/→ шилжих, N тэмдэглэл, F бүтэн дэлгэц.|Бүлгээ (4–5 хүүхэд) урьдчилан хуваавал «Үлгэр зохиох» хэсэгт цаг хэмнэнэ.">
+  <div class="inner">
+    <div class="coverWrap">
+      <div class="cover">
+        <span class="orn" style="top:24px;left:62px">✦</span><span class="orn" style="top:24px;right:26px">✦</span>
+        <span class="orn" style="bottom:24px;left:62px">✦</span><span class="orn" style="bottom:24px;right:26px">✦</span>
+        <svg viewBox="0 0 200 90" aria-hidden="true">
+          <circle cx="100" cy="45" r="34" fill="#ffe28a"/><circle cx="116" cy="36" r="30" fill="#4a30a6"/>
+          <g fill="#f6c945"><path class="twinkle" style="transform-origin:30px 30px" d="M30 18l3 9 9 3-9 3-3 9-3-9-9-3 9-3z"/><path class="twinkle" style="transform-origin:170px 50px;animation-delay:.8s" d="M170 40l2 7 7 3-7 3-2 7-2-7-7-3 7-3z"/><path class="twinkle" style="transform-origin:150px 14px;animation-delay:1.5s" d="M150 8l1.5 4.5 4.5 1.5-4.5 1.5-1.5 4.5-1.5-4.5-4.5-1.5 4.5-1.5z"/></g>
+        </svg>
+        <div class="school">🏫 1-р сургууль</div>
+        <div class="subject">Монгол хэл</div>
+        <div class="chap">Уран сэтгэмжээ хөгжүүлье</div>
+        <div class="sub2">8-р бүлэг · 🏰 Үлгэрийн цех · 5-р анги</div>
+        <div class="teacher">👩‍🏫 Багш: В. Гэрэлтуяа</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. Шидэт хаалга -->
+<section class="slide" data-name="Шидэт хаалга" data-min="3"
+  data-notes="Сурах бичиг х.93, 1-р даалгавар: «Амьдрал дээр ийм зүйлүүд байж болох уу? Яагаад?» гэж асууна.|«✨ Хаалгыг нээх» (эсвэл зураг дээр дарах) — зүүн талд бодит ертөнц (сургууль, мод, хонь…), хаалганаас уран сэтгэмжийн ертөнц (луу, дагина, шидэт морь…) гарч ирнэ. Энэ хоёрын ялгааг хүүхдүүдээр хэлүүлнэ.|Хаалга нээгдэхэд тодорхойлолт тодорно (х.98, 2-р даалгавар).|«🎲 Хувирах» — х.93-ын 1.2 асуулт: «Хэрвээ чи үл үзэгдэгч, аварга биет, нисдэг хүн байсан бол юу хийх вэ?» 2–3 хүүхдэд ярьж өгүүлнэ (х.93, 2-р даалгавар).">
+  <div class="inner">
+    <div class="shead"><span class="tag">Цехийн хаалга</span><h2>🚪 Шидэт хаалгаар орцгооё!</h2><span class="src">📖 Сурах бичиг х.93, х.98</span></div>
+    <div class="grid2" style="grid-template-columns:1.35fr .65fr;align-items:start">
+      <div class="cbox">
+        <canvas id="door" width="900" height="440" title="Хаалган дээр дарна уу"></canvas>
+        <div class="ctrl"><button class="btn gold sm" id="doorBtn">✨ Хаалгыг нээх</button></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="parch defs" id="defs">
+          <div class="veil">
+            <div class="d r"><h3>🌍 Бодит байдал</h3><p>Амьдрал дээр <b>байдаг</b>, бидний харж, сонсож мэддэг зүйл.</p></div>
+            <div class="d m"><h3>✨ Уран сэтгэмж</h3><p>Амьдрал дээр <b>байдаггүй</b> — зохиолч төсөөлж, урнаар сэтгэж бичсэн зүйл.</p></div>
+          </div>
+        </div>
+        <div class="glass">
+          <b>🎲 Хэрвээ чи … байсан бол?</b>
+          <div class="pw" id="pwShow">❔</div>
+          <div class="pwq" id="pwQ">Товч дараад хэн болохоо мэдээрэй!</div>
+          <div class="row" style="justify-content:center"><button class="btn magic sm" id="pwRoll">🎲 Хувирах</button></div>
+          <div class="row" id="pwAsk" style="justify-content:center;margin-top:8px;display:none">
+            <button class="btn real sm" data-a="0">🌍 Амьдрал дээр байдаг</button><button class="btn magic sm" data-a="1">✨ Байдаггүй</button>
+          </div>
+          <div class="feedback" id="pwFb" style="text-align:center;font-size:17px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. Уншлага -->
+<section class="slide" data-name="Уншлага: «Шидэт аялал»" data-min="6"
+  data-notes="Сурах бичиг х.94–97: Б.Чимиддорж «Шидэт аялал» (зөгнөлт өгүүллэг) — 4 хэсэгтэй. Багш эхний хэсгийг уншиж, үлдсэнийг хүүхдүүд ээлжлэн чангаар уншина. Цаг хүрэхгүй бол урд өдөр нь гэрээр уншуулах.|Уншихын өмнө х.93-ын үгийн тайлбар: мухлаг, хөрвүүлэх (доорх карт дээр дарж нээнэ).|Хэсэг бүрийг уншсаны дараа картыг эргүүлж агуулгыг сэргээнэ (карт дээрх нь багшийн товч дүгнэлт, эхийн бичвэр биш).|«Буманд тусалъя» — х.95-д мухлаг асуусан бодлого: 25×3−73+2 = 4. Буман таамаглаад 2 гэж бичсэн.|Ярилцах: х.97 «Уншсанаа дүгнэн ярилцъя» 1–3 асуулт.">
+  <div class="inner">
+    <div class="shead"><span class="tag">Уншлага</span><h2>🚀 «Шидэт аялал»</h2><span style="font-size:16px;color:#d9cff7">Б.Чимиддорж · зөгнөлт өгүүллэг</span><span class="src">📖 Сурах бичиг х.94–97</span></div>
+    <div class="grid2" style="grid-template-columns:1.35fr .65fr">
+      <div class="flips" id="flips"></div>
+      <div style="display:flex;flex-direction:column;gap:10px;min-height:0">
+        <div class="parch">
+          <h3>🍦 Буманд тусалъя! <span style="font-size:14px;color:var(--muted)">(х.95)</span></h3>
+          <div style="font-size:16px">Мөхөөлдөс авахын тулд мухлагийн бодлогыг зөв бодох ёстой:</div>
+          <div class="calcq">25 × 3 − 73 + 2 = <input id="bmIn" inputmode="numeric" autocomplete="off"></div>
+          <div class="row" style="justify-content:center"><button class="btn gold sm" id="bmChk">✓ Шалгах</button></div>
+          <div class="feedback" id="bmFb" style="font-size:16.5px;text-align:center"></div>
+        </div>
+        <div class="parch" style="padding:10px 14px">
+          <b style="font-size:17px">📘 Үгийн тайлбар (х.93)</b>
+          <div class="gloss" style="margin-top:4px">
+            <span class="gl">Мухлаг <i>— жижиг бараа зардаг бяцхан бүхээг</i></span>
+            <span class="gl">Хөрвүүлэх <i>— орчуулах; эргүүлэх</i></span>
+          </div>
+          <b style="font-size:17px;display:block;margin-top:6px">💬 Ярилцъя (х.97)</b>
+          <ol class="qs"><li>Цолмон гараг манай дэлхийгээс юугаараа ялгаатай вэ?</li><li>Буман яагаад эрдэм сурахаар шийдсэн бэ?</li><li>Чи Цолмон гарагт очсон бол юу хийх байсан бэ?</li></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. Бодит уу, зохиомол уу? -->
+<section class="slide" data-name="Бодит уу, зохиомол уу?" data-min="5"
+  data-notes="Сурах бичиг х.97–98, «Бодит байдал ба уран сэтгэмжийг ялгая» 1-р даалгавар: хэсэг бүрээс амьдрал дээр байдаг ба байдаггүй зүйл олох. Картууд Батын жишээнүүд болон өгүүллэгийн бусад зүйлсээс бүрдсэн.|Хүүхэд ээлжлэн гарч картыг сонгоод (дарж) сагс руу дарна. Чирж оруулж ч болно. Буруу бол карт сэгсрэгдэж буцна, тайлбар доор гарна.|Хүүхэд бүрээс «Яагаад?» гэж асууж, тайлбарлуулна (х.98 3-р даалгавар).|Нэмэлт: х.104 «Бирдтэй уулзсан нь» эхээс бодит ба уран сэтгэмжийн зүйлийг олох (давтлага).">
+  <div class="inner">
+    <div class="shead"><span class="tag">Ялгах</span><h2>🔍 Бодит уу, зохиомол уу?</h2><span class="score" id="srtScore">0 / 12</span><button class="btn ghost sm" id="srtReset">↺</button><span class="src">📖 Сурах бичиг х.97–98</span></div>
+    <div class="sortg">
+      <div class="basket r" data-b="0"><h3>🌍 Бодит байдал</h3><div class="bs">Амьдрал дээр байдаг</div><div class="list" id="bkt0"></div></div>
+      <div style="display:flex;flex-direction:column;gap:8px;min-height:0">
+        <div style="text-align:center;font-size:16px;color:#d9cff7">👆 Картаа сонгоод сагсан дээр дар (эсвэл чирж оруул)</div>
+        <div class="pool" id="srtPool"></div>
+        <div class="whyBox"><div class="feedback" id="srtFb" style="margin:0;font-size:17px"></div></div>
+      </div>
+      <div class="basket m" data-b="1"><h3>✨ Уран сэтгэмж</h3><div class="bs">Амьдрал дээр байдаггүй</div><div class="list" id="bkt1"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. Үлгэрийн уул -->
+<section class="slide" data-name="Үлгэрийн бүтэц — үйл явдлын уул" data-min="5"
+  data-notes="Сурах бичиг х.99: «Эхийн эхлэл, гол, төгсгөл хэсгүүдийн утгын холбоо». Сурах бичигт 3 хэсэг; уулын 5 шат нь «гол» хэсгийг өрнөл → оргил → тайлал гэж задалсан. Бүгдийг байрлуулсны дараа 3 хэсгийн шошго гарна.|«Шидэт аялал»-ын үйл явдлын картыг сонгоод уулын зөв шат дээр дарна. Буруу бол карт буцна.|Дараа нь «🔗 Холбох үг» тоглоом: х.99-ийн хүснэгтийн үгс (Эрт цагт, Тэгээд, Гэтэл, Эцэст нь…) аль хэсэгт хэрэглэгдэх вэ?|Нэмэлт (х.99–100, 2-р даалгавар): «Ганц цуцал гал болдоггүй» эхийн догол мөрүүдийг дугаарлах — зөв дараалал: 3-р догол = эхлэл, 2-р = гол, 1-р = төгсгөл.">
+  <div class="inner">
+    <div class="shead"><span class="tag">Бүтэц</span><h2>⛰️ Үйл явдлын уул</h2><button class="btn ghost sm" id="mtLinkBtn">🔗 Холбох үг</button><button class="btn ghost sm" id="mtReset">↺</button><span class="src">📖 Сурах бичиг х.99</span></div>
+    <div class="mtn" id="mtn">
+      <svg viewBox="0 0 1000 340" preserveAspectRatio="none" aria-hidden="true">
+        <defs><linearGradient id="mg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7c5fd6"/><stop offset="1" stop-color="#22165c"/></linearGradient></defs>
+        <path d="M0 340 L60 318 L200 250 L330 175 L500 30 L670 175 L800 250 L940 318 L1000 340 Z" fill="url(#mg)" opacity=".85"/>
+        <path d="M455 68 L500 30 L545 68 L520 62 L500 76 L478 62 Z" fill="#fff6d8" opacity=".9"/>
+        <path d="M60 318 L200 250 L330 175 L500 30 L670 175 L800 250 L940 318" fill="none" stroke="#f6c945" stroke-width="4" stroke-dasharray="10 10"/>
+      </svg>
+    </div>
+    <div class="band">
+      <div class="mpool" id="mtPool"></div>
+      <div class="lk" id="lkBox">
+        <div class="lkw" id="lkWord">…</div>
+        <button class="btn gold" data-l="0">🌅 Эхлэл</button><button class="btn" data-l="1">⛰️ Гол</button><button class="btn real" data-l="2">🌙 Төгсгөл</button>
+        <span class="score" id="lkScore">0 / 10</span>
+      </div>
+      <div class="feedback" id="mtFb" style="text-align:center;margin:0"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 6. Үлгэрийн шоо -->
+<section class="slide" data-name="Үлгэрийн шоо" data-min="3"
+  data-notes="Сурах бичиг х.101 (3–4-р даалгавар): үлгэрийн үйл явдлыг төсөөлж, үг цуглуулах — Хэн, Хаана, Юу, Үйл хөдлөл. Шооны нүүрнүүд х.100–104-ийн үгсээс (ядуу түлээчин, ах дүү хоёр, хурмастын чоно, нисдэг морь, тал нутаг, тэнгэр, алтан сүх, бирдийн лонх…).|«🎲 Шоо хаях» дарахад 4 шоо эргэлдэнэ. Таалагдсан шоог дээр нь дарж 🔒 түгжинэ — дахин хаяхад зөвхөн түгжээгүй нь солигдоно.|Сургамжийн сэдвийг сонгоно (х.104, 3-р даалгаврын сэдвүүд + шударга байдал (х.102), шуналт (х.103)).|Бүлэг бүр өөрийн шоог хаяж болно — дэвтэртээ бичүүлнэ. Доорх «үлгэрийн үр» дараагийн хуудсанд эхлэх өгүүлбэр болно.">
+  <div class="inner">
+    <div class="shead"><span class="tag">Санаа</span><h2>🎲 Үлгэрийн шоо</h2><span class="src">📖 Сурах бичиг х.101, х.103</span></div>
+    <div class="dice" id="dice"></div>
+    <div class="row" style="justify-content:center;margin:12px 0 8px"><button class="btn gold big" id="rollBtn">🎲 Шоо хаях</button><span style="font-size:16px;color:#d9cff7">Шоон дээр дарвал 🔒 түгжинэ</span></div>
+    <div class="morals" id="morals"></div>
+    <div class="parch seed" id="seed" style="margin-top:10px;text-align:center"></div>
+  </div>
+</section>
+
+<!-- 7. Үлгэр зохиох -->
+<section class="slide" data-name="Үлгэр зохиох" data-min="10"
+  data-notes="Сурах бичиг х.102: Батын төлөвлөгөө ба «Алтан сүх» (Эзопын үлгэр) — эхлэл, гол, төгсгөлтэй зохиох жишээ. х.103 загвар: Эхлэл — хэний тухай; Гол — ямар асуудалтай тулгарах; Төгсгөл — хэрхэн төгсөх.|Зохион байгуулалт: бүлгүүд дэвтэр/цаасан дээр бичнэ (7 мин). Нэг бүлгийн төлөөлөгч эсвэл багш дэлгэц дээр бичиж оруулна. Эсвэл ангиараа нэг үлгэрийг хамтдаа зохионо.|«✨ Эхлүүлэх» — шооноос эхлэх өгүүлбэр оруулна. Доорх холбох үг дээр дарвал курсор байгаа хэсэгт нэмэгдэнэ (х.99). Бүх бичвэр автоматаар хадгалагдана.|Шалгах хуудас автоматаар ✓ болно (х.103-ын үнэлгээний шалгуурт тулгуурласан).|«📖 Номонд оруулах» дарахад номын хуудас бэлэн болно. Дараагийн бүлгийнхийг «🧹 Шинэ үлгэр»-ээр эхлүүлнэ.">
+  <div class="inner">
+    <div class="shead"><span class="tag">Зохиох</span><h2>✍️ Үлгэрээ зохиоцгооё!</h2><span class="src">📖 Сурах бичиг х.102–103</span></div>
+    <div class="grid2 wr">
+      <div class="parch wcard">
+        <div class="wrow"><label for="wTitle">📕 Нэр</label><input id="wTitle" placeholder="Үлгэрийн нэр…" maxlength="60"><label for="wAuthor">✍️ Зохиогч</label><input id="wAuthor" placeholder="Жишээ: 2-р бүлэг" maxlength="40"></div>
+        <div class="part"><div class="ph"><b>🌅 Эхлэл</b><span class="hint">Хэний тухай? Хаана?</span><button class="mini" data-start="0">✨ Эхлүүлэх</button><span class="wc" id="wc0">0 үг</span></div><textarea id="wP0" rows="2"></textarea></div>
+        <div class="part"><div class="ph"><b>⛰️ Гол</b><span class="hint">Ямар бэрхшээл тулгарав? Шидэт зүйл юу хийв?</span><button class="mini" data-start="1">✨ Эхлүүлэх</button><span class="wc" id="wc1">0 үг</span></div><textarea id="wP1" rows="3"></textarea></div>
+        <div class="part"><div class="ph"><b>🌙 Төгсгөл</b><span class="hint">Хэрхэн төгсөв? Ямар сургамжтай?</span><button class="mini" data-start="2">✨ Эхлүүлэх</button><span class="wc" id="wc2">0 үг</span></div><textarea id="wP2" rows="2"></textarea></div>
+        <div class="links" id="wLinks"><span class="lb">🔗 Холбох үг:</span></div>
+      </div>
+      <div class="side">
+        <div class="glass" style="padding:8px 12px"><b style="font-size:17px">🎲 Миний шоо</b><div class="wdice" id="wDice"></div></div>
+        <div class="glass" style="padding:8px 12px"><b style="font-size:17px">✅ Шалгах хуудас</b><ul class="chk" id="wChk"></ul><div id="wTotal" style="font-size:15px;margin-top:4px;color:var(--gold-l);font-weight:700"></div></div>
+        <button class="btn gold" id="wBook">📖 Номонд оруулах</button>
+        <button class="btn ghost sm" id="wNew">🧹 Шинэ үлгэр</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 8. Үлгэрийн цаг -->
+<section class="slide" data-name="Үлгэрийн цаг" data-min="5"
+  data-notes="Сурах бичиг х.102, 6–8-р алхам: засаж сайжруулах, найздаа уншиж өгөх. х.103, 9-р даалгавар: өөрийн болон найзынхаа үлгэрийг үнэлэх.|Бүлэг бүр үлгэрээ 1 минутад чангаар уншина. Бусад нь ⭐ +1 од өгнө (санал өгсөн бүлэг тус бүр 1 од).|Баруун талын 5 шалгуурыг (х.103 хүснэгт) «Маш сайн / Сайн / Дунд» гэж ангиараа үнэлнэ.|Номонд үлгэр ороогүй бол жишээ үлгэр харагдана (багшийн зохиосон жишээ).">
+  <div class="inner">
+    <div class="shead"><span class="tag">Уншлагын цаг</span><h2>🌙 Үлгэрийн цаг</h2><span class="src">📖 Сурах бичиг х.102–103</span></div>
+    <div class="gal">
+      <div class="spread" id="gPage"></div>
+      <div class="side">
+        <div class="glass pager"><button class="btn sm" id="gPrev">◀</button><span id="gNum">1 / 1</span><button class="btn sm" id="gNext">▶</button></div>
+        <div class="glass vote"><div class="bigstar" id="gStarBox">⭐ <span id="gStars">0</span></div>
+          <div class="row" style="justify-content:center;margin-top:4px"><button class="btn gold sm" id="gVote">⭐ +1 од</button><button class="btn ghost sm" id="gUnvote">−1</button></div>
+          <div class="leader" id="gLeader"></div></div>
+        <div class="glass rub" style="padding:8px 12px"><b style="font-size:16px">📋 Үнэлгээ (х.103)</b><div id="gRub"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 9. Дүгнэлт -->
+<section class="slide" data-name="Дүгнэлт ба гэрийн даалгавар" data-min="2"
+  data-notes="Өгүүлбэрийг ангиараа гүйцээнэ (бичвэр хадгалагдана). «💡 Сурах бичигт» товчоор х.98-ын тодорхойлолтыг харуулна.|Сар дээр дарж өөрийгөө үнэлнэ: 🌑 чадахгүй байна → 🌓 бага зэрэг → 🌕 бүрэн чадна.|Гэрийн даалгавар: х.103 «Бие даан үлгэр зохиож бичье» — «Шуналт ах» сэдвээр 1–9 алхмын дагуу үлгэр зохиох. Нэмэлт: х.100 «Бүргэд» эхийг үргэлжлүүлэн бичих эсвэл х.104 «Энэ хүртэл сурснаа эргэн давтъя» 1–3.">
+  <div class="inner">
+    <div class="shead"><span class="tag">Дүгнэлт</span><h2>🌟 Шидэт хаалгаа хаахын өмнө…</h2></div>
+    <div class="grid2" style="grid-template-columns:1.15fr .85fr;align-items:start">
+      <div class="parch frames">
+        <div class="fr">Бодит байдал гэдэг нь <div contenteditable="true" data-k="mk8_r1" data-ph="амьдрал дээр…"></div></div>
+        <div class="fr">Уран сэтгэмж гэдэг нь <div contenteditable="true" data-k="mk8_r2" data-ph="амьдрал дээр…"></div></div>
+        <div class="fr">Үлгэр <div contenteditable="true" data-k="mk8_r3" data-ph="… , … , …"></div> гэсэн хэсэгтэй.</div>
+        <div class="fr">Миний үлгэрийн хамгийн гоё хэсэг <div contenteditable="true" data-k="mk8_r4" data-ph="…"></div></div>
+        <button class="btn ghost sm" id="rHint">💡 Сурах бичигт (х.98)</button>
+        <div class="hintA" id="rHintA">🌍 <b>Бодит байдал</b> — амьдрал дээр байдаг зүйл. ✨ <b>Уран сэтгэмж</b> — бодит амьдрал дээр байдаггүй, бидний хараагүй, сонсоогүй зүйл. 📚 Үлгэр <b>эхлэл, гол, төгсгөл</b> гэсэн хэсэгтэй (х.99).</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="glass moons" id="moons">
+          <b>🌙 Би өөрийгөө үнэлье</b>
+          <div class="mr"><button data-m="0">🌑</button>Бодит ба уран сэтгэмжийг ялгаж чадна</div>
+          <div class="mr"><button data-m="1">🌑</button>Үлгэрийн бүтцийг мэднэ</div>
+          <div class="mr"><button data-m="2">🌑</button>Өөрөө үлгэр зохиож чадна</div>
+        </div>
+        <div class="hw">🏠 <b>Гэрийн даалгавар:</b> Сурах бичиг <b>х.103</b> — «Шуналт ах» сэдвээр үлгэр зохиож бичих (эхлэл, гол, төгсгөлтэй). <br>⭐ Нэмэлт: <b>х.100</b> «Бүргэд» эхийг үргэлжлүүлэн бичих.</div>
+        <div class="bye">Сайхан мөрөөдөөрэй! 🌙✨</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<nav class="nav">
+  <button class="btn" id="prevBtn">◀ Өмнөх</button>
+  <div class="dots" id="dots"></div>
+  <button class="btn gold" id="nextBtn">Дараах ▶</button>
+</nav>
+<div class="tnotes" id="tnotes"><h4>📝 Багшид зориулсан зөвлөмж</h4><ul id="tnList"></ul></div>
+<div class="modal" id="modal"><div class="mbox"><div class="spread" id="mPage"></div>
+  <div class="row" style="justify-content:center"><button class="btn ghost" id="mClose" style="color:#fff">✖ Хаах</button><button class="btn gold" id="mGo">🌙 Үлгэрийн цаг руу ▶</button></div></div></div>
+<canvas id="confetti"></canvas>
+
+<script>
+/* ---------- Helpers ---------- */
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+function jget(k,d){try{const v=store.get(k);return v?JSON.parse(v):d}catch(e){return d}}
+function jset(k,v){try{store.set(k,JSON.stringify(v))}catch(e){}}
+const $=id=>document.getElementById(id);
+const rnd=(a,b)=>a+Math.random()*(b-a);
+const ri=n=>Math.floor(Math.random()*n);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=ri(i+1);[a[i],a[j]]=[a[j],a[i]]}return a}
+function flash(el,cls){el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls)}
+function fb(id,ok,html){const f=$(id);f.className='feedback '+(ok===true?'ok':ok===false?'no':'');f.innerHTML=html}
+const EMO='"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';
+
+/* ---------- Background sky ---------- */
+const sky=$('sky'),skx=sky.getContext('2d');let skyStars=[],shoot=null,skyLast=0;
+function skySize(){sky.width=innerWidth;sky.height=innerHeight;skyStars=Array.from({length:Math.round(innerWidth*innerHeight/7000)},()=>({x:Math.random()*sky.width,y:Math.random()*sky.height,r:rnd(.4,1.7),p:rnd(0,6.28),s:rnd(.4,1.6)}))}
+function skyStep(t){requestAnimationFrame(skyStep);if(t-skyLast<70)return;skyLast=t;
+  skx.clearRect(0,0,sky.width,sky.height);skx.fillStyle='#fff3c4';
+  for(const s of skyStars){skx.globalAlpha=.25+.75*Math.abs(Math.sin(s.p+t/1000*s.s));skx.beginPath();skx.arc(s.x,s.y,s.r,0,6.283);skx.fill()}
+  skx.globalAlpha=1;
+  if(!shoot&&Math.random()<.006)shoot={x:rnd(0,sky.width*.7),y:rnd(0,sky.height*.4),k:0};
+  if(shoot){shoot.k+=.05;const L=140,x=shoot.x+shoot.k*320,y=shoot.y+shoot.k*130;const g=skx.createLinearGradient(x-L,y-L*.4,x,y);g.addColorStop(0,'rgba(255,233,163,0)');g.addColorStop(1,'rgba(255,233,163,.9)');skx.strokeStyle=g;skx.lineWidth=2;skx.beginPath();skx.moveTo(x-L,y-L*.4);skx.lineTo(x,y);skx.stroke();if(shoot.k>=1)shoot=null}
+}
+skySize();addEventListener('resize',skySize);requestAnimationFrame(skyStep);
+
+/* ---------- Slides ---------- */
+const slides=[...document.querySelectorAll('.slide')];const dots=$('dots');let cur=0;
+slides.forEach((s,i)=>{const b=document.createElement('button');b.className='dot';b.innerHTML='<span>'+(i+1)+'</span>';b.title=s.dataset.name;b.onclick=()=>go(i);dots.appendChild(b)});
+function go(i){
+  cur=Math.max(0,Math.min(slides.length-1,i));
+  slides.forEach((s,j)=>s.classList.toggle('active',j===cur));
+  [...dots.children].forEach((d,j)=>{d.classList.toggle('on',j===cur);d.classList.toggle('done',j<cur)});
+  const s=slides[cur];
+  $('stageName').textContent=s.dataset.name;$('sheetNo').textContent='Хуудас '+(cur+1)+'/'+slides.length;
+  $('tnList').innerHTML='<li>⏱ Зөвлөмж хугацаа: ≈'+s.dataset.min+' мин</li>'+s.dataset.notes.split('|').map(t=>'<li>'+t+'</li>').join('');
+  $('prevBtn').disabled=cur===0;$('nextBtn').textContent=cur===slides.length-1?'🏁 Төгсгөл':'Дараах ▶';
+  if(s.contains($('door')))doorStart();else doorStop();
+  if(s.contains($('wTitle')))wRefresh();
+  if(s.contains($('gPage')))gRender();
+  store.set('mk8_slide',cur);
+}
+$('prevBtn').onclick=()=>go(cur-1);$('nextBtn').onclick=()=>{if(cur===slides.length-1)confetti(120);go(cur+1)};
+document.addEventListener('keydown',e=>{
+  const t=e.target;if(t.isContentEditable||t.tagName==='INPUT'||t.tagName==='TEXTAREA')return;
+  if(e.key==='Escape'){$('modal').classList.remove('show');return}
+  if(e.key==='ArrowRight'||e.key==='PageDown')go(cur+1);
+  else if(e.key==='ArrowLeft'||e.key==='PageUp')go(cur-1);
+  else if(e.key==='f'||e.key==='F')toggleFS();
+  else if(e.key==='n'||e.key==='N')toggleNotes();
+});
+function toggleFS(){try{if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen()}catch(e){}}
+function toggleNotes(){$('tnotes').classList.toggle('show')}
+$('fsBtn').onclick=toggleFS;$('notesBtn').onclick=toggleNotes;
+
+/* ---------- Timer ---------- */
+let remain=40*60,running=false,tick=null;
+function drawT(){const a=Math.abs(remain),m=Math.floor(a/60),s=a%60;$('tval').textContent=(remain<0?'+':'')+m+':'+String(s).padStart(2,'0');$('timer').className='timer'+(remain<0?' over':remain<=300?' warn':'')}
+$('tPlay').onclick=()=>{running=!running;$('tPlay').textContent=running?'⏸':'▶';if(running)tick=setInterval(()=>{remain--;drawT()},1000);else clearInterval(tick)};
+$('timer').ondblclick=()=>{remain=40*60;drawT()};drawT();
+
+/* ---------- Editable frames ---------- */
+document.querySelectorAll('[data-k]').forEach(e=>{const k=e.dataset.k;e.textContent=store.get(k)||'';e.addEventListener('input',()=>store.set(k,e.innerText))});
+
+/* ================= 2. Шидэт хаалга ================= */
+const dc=$('door'),dx=dc.getContext('2d'),DW=900,DH=440;
+let dOpen=0,dTarget=0,dRun=false,dT0=0;
+const dStars=Array.from({length:80},()=>({x:Math.random()*DW,y:Math.random()*280,r:rnd(.6,2),p:rnd(0,6)}));
+const REAL=[['🏫',80,318,54],['🌳',190,300,62],['🐑',140,392,42],['🏠',285,352,46],['🚲',335,405,34],['📚',40,400,34]];
+const MAGIC=[['🐉',640,150],['🧚',560,105],['🏰',820,300],['🦄',700,370],['🧞',835,175],['🌈',735,95],['👽',600,250],['🐎',760,240],['⭐',560,360]];
+function archPath(c,x,y,w,h){c.beginPath();c.moveTo(x,y+h);c.lineTo(x,y+w/2);c.arc(x+w/2,y+w/2,w/2,Math.PI,0);c.lineTo(x+w,y+h);c.closePath()}
+function emo(c,e,x,y,s){c.font=s+'px '+EMO;c.textAlign='center';c.textBaseline='middle';c.fillText(e,x,y)}
+function pill(c,t,x,y,bg,fg){c.font='800 22px Montserrat,sans-serif';c.textAlign='center';c.textBaseline='middle';const w=c.measureText(t).width+28;c.fillStyle=bg;c.beginPath();if(c.roundRect)c.roundRect(x-w/2,y-17,w,34,17);else c.rect(x-w/2,y-17,w,34);c.fill();c.fillStyle=fg;c.fillText(t,x,y+1)}
+function doorDraw(now){
+  const c=dx;let g=c.createLinearGradient(0,0,0,DH);g.addColorStop(0,'#0b0628');g.addColorStop(1,'#33206b');c.fillStyle=g;c.fillRect(0,0,DW,DH);
+  c.fillStyle='#fff3c4';dStars.forEach(s=>{c.globalAlpha=.35+.65*Math.abs(Math.sin(s.p+now/700));c.beginPath();c.arc(s.x,s.y,s.r,0,7);c.fill()});c.globalAlpha=1;
+  // moon
+  c.save();c.shadowColor='#ffd75e';c.shadowBlur=30;c.fillStyle='#ffe28a';c.beginPath();c.arc(860,92,32,0,7);c.fill();c.restore();
+  c.fillStyle='#160d40';c.beginPath();c.arc(874,82,29,0,7);c.fill();
+  // hills
+  c.fillStyle='#174040';c.beginPath();c.moveTo(0,DH);c.lineTo(0,330);c.quadraticCurveTo(220,290,450,345);c.lineTo(450,DH);c.closePath();c.fill();
+  c.fillStyle='#43207a';c.beginPath();c.moveTo(450,DH);c.lineTo(450,345);c.quadraticCurveTo(690,290,DW,330);c.lineTo(DW,DH);c.closePath();c.fill();
+  REAL.forEach(([e,x,y,s])=>emo(c,e,x,y,s));
+  // door glow
+  if(dOpen>.02){const rg=c.createRadialGradient(450,270,10,450,270,300);rg.addColorStop(0,'rgba(255,220,120,'+(.6*dOpen)+')');rg.addColorStop(1,'rgba(255,220,120,0)');c.fillStyle=rg;c.fillRect(140,0,620,DH)}
+  const x=385,y=140,w=130,h=255;
+  archPath(c,x-14,y-14,w+28,h+14);c.fillStyle='#4b3a6b';c.fill();
+  archPath(c,x,y,w,h);
+  if(dOpen>.02){const ig=c.createLinearGradient(0,y,0,y+h);ig.addColorStop(0,'#fffbe0');ig.addColorStop(1,'#f6c945');c.fillStyle=ig}else c.fillStyle='#2b1a10';
+  c.fill();
+  if(dOpen>.3){c.save();archPath(c,x,y,w,h);c.clip();for(let i=0;i<14;i++){const a=now/900+i*.45,r=20+i*7;c.fillStyle='rgba(155,77,255,'+(.25*dOpen)+')';c.beginPath();c.arc(450+Math.cos(a)*r*.6,270+Math.sin(a)*r,4+i*.4,0,7);c.fill()}c.restore()}
+  // door panel (swings inward)
+  c.save();archPath(c,x,y,w,h);c.clip();c.translate(x,0);c.scale(Math.max(.06,1-dOpen*.94),1);
+  c.fillStyle='#8a5a2b';c.fillRect(0,y,w,h);c.strokeStyle='#5e3a18';c.lineWidth=3;
+  for(let i=1;i<4;i++){c.beginPath();c.moveTo(i*w/4,y);c.lineTo(i*w/4,y+h);c.stroke()}
+  c.fillStyle='#f6c945';c.beginPath();c.arc(w-20,y+h*.58,7,0,7);c.fill();
+  c.font='32px '+EMO;c.textAlign='center';c.textBaseline='middle';c.fillText('⭐',w/2,y+52);
+  c.restore();
+  archPath(c,x,y,w,h);c.lineWidth=6;c.strokeStyle='#f6c945';c.stroke();
+  // magic floaters
+  if(dOpen>.5){const el=now-dT0;MAGIC.forEach(([e,tx,ty],i)=>{let k=Math.min(1,Math.max(0,(el-300-i*170)/900));if(k<=0)return;k=1-Math.pow(1-k,3);
+    const px=450+(tx-450)*k,py=270+(ty-270)*k+Math.sin(now/600+i)*7*k;c.globalAlpha=k;emo(c,e,px,py,24+30*k);c.globalAlpha=1})}
+  pill(c,'🌍 Бодит байдал',190,30,'rgba(31,143,130,.9)','#fff');
+  if(dOpen>.5)pill(c,'✨ Уран сэтгэмж',680,30,'rgba(138,63,240,.92)','#fff');
+  else{c.globalAlpha=.6+.4*Math.sin(now/300);pill(c,'👆 Хаалгыг тогшоорой',450,110,'rgba(246,201,69,.95)','#2a1d45');c.globalAlpha=1}
+}
+function doorLoop(now){if(!dRun)return;const d=dTarget-dOpen;dOpen+=d*.06;if(Math.abs(d)<.002)dOpen=dTarget;doorDraw(now);requestAnimationFrame(doorLoop)}
+function doorStart(){if(dRun)return;dRun=true;requestAnimationFrame(doorLoop)}
+function doorStop(){dRun=false}
+function doorToggle(){dTarget=dTarget?0:1;if(dTarget){dT0=performance.now();$('defs').classList.add('show');confetti(50)}$('doorBtn').textContent=dTarget?'🚪 Хаалгыг хаах':'✨ Хаалгыг нээх'}
+$('doorBtn').onclick=doorToggle;dc.onclick=doorToggle;
+doorDraw(0);
+
+const POWERS=[['👻','үл үзэгдэгч хүн'],['💪','аварга биет'],['🦸','нисдэг хүн'],['🐾','амьтдын хэлийг ойлгодог хүн'],['🔭','далдыг харагч хүн'],['⏳','цаг хугацаагаар аялагч']];
+let pwBusy=false;
+$('pwRoll').onclick=()=>{if(pwBusy)return;pwBusy=true;$('pwAsk').style.display='none';fb('pwFb',null,'');let n=0;const final=POWERS[ri(POWERS.length)];
+  const iv=setInterval(()=>{const p=POWERS[n++%POWERS.length];$('pwShow').textContent=p[0];if(n>12){clearInterval(iv);$('pwShow').textContent=final[0];flash($('pwShow'),'pop');
+    $('pwQ').innerHTML='Хэрвээ чи <b>'+final[1]+'</b> байсан бол юу хийх вэ?<br><span style="font-size:17px;font-weight:600">Ийм хүн амьдрал дээр байдаг уу?</span>';$('pwAsk').style.display='flex';pwBusy=false}},80)};
+document.querySelectorAll('#pwAsk button').forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){fb('pwFb',true,'✨ Зөв! Энэ бол <b>уран сэтгэмж</b>. Одоо юу хийхээ найздаа ярьж өгөөрэй!');confetti(30)}else fb('pwFb',false,'🤔 Чи ийм хүн үнэхээр харж байсан уу? Энэ бол уран сэтгэмж.')});
+
+/* ================= 3. Уншлага ================= */
+const PARTS=[
+  ['👽','1. Харь гаргийн хүүтэй танилцсан нь','х.94','Буцдаггүй Буман найз Борхүүтэйгээ хэн нь сансрын нисгэгч болох талаар маргажээ. Борхүү: <b>нисгэгч тоо сайн мэдэх ёстой</b> гэхэд Буман гомдоод гэртээ харина. Шөнө гэрт нь <b>Цолмон гаргаас ирсэн хүү</b> орж ирээд Буманыг өөрийн гарагт урьж, хамтдаа ниснэ.'],
+  ['🔘','2. Цолмон гарагт буусан нь','х.95','Цолмон гарагт <b>товч дармагц</b> ширээ, сандал, хоол бий болдог. Буманд тоогоор дүүрэн «Хүүхдийн жаргал» ном өгөхөд тэр уншилгүй орхиод, «<b>цээжээр бодчихсон</b>» гэж худлаа хэлнэ.'],
+  ['🍦','3. Мөхөөлдөс идэх оролдлого','х.95–96','<b>Нүд, ам, гартай мухлаг</b> мөхөөлдөс өгөхийн өмнө бодлого бодуулна. Буман таамаглаад буруу хариулахад мухлаг түүнийг барьж авна. Сайхан сэтгэлтэй нэг хүн зөв хариултыг дарж аварна.'],
+  ['🎓','4. Газрын хүү гэмээ ухаарсан нь','х.96–97','Буманыг «<b>залхуу, худалч</b>» өвчтэй гээд гэрт нь буцаахаар болно. Тэр нисэх дүрмийн чухал хэсгийг уншаагүй тул замдаа гал тулгарахад сандарна. Гэмээ ухаарч, <b>сайн сурахаар</b> шийдэхэд аюул арилна.']
+];
+PARTS.forEach(([e,t,p,s])=>{const d=document.createElement('div');d.className='flip';d.innerHTML='<div class="fin"><div class="face front"><div class="e">'+e+'</div><div class="t">'+t+'</div><div class="p">📖 '+p+' · 👆 дарж эргүүл</div></div><div class="face back"><div>'+s+'</div></div></div>';d.onclick=()=>d.classList.toggle('on');$('flips').appendChild(d)});
+$('bmChk').onclick=()=>{const inp=$('bmIn'),v=parseInt(String(inp.value).trim(),10);
+  if(v===4){inp.className='ok';fb('bmFb',true,'🎉 Зөв! 75 − 73 + 2 = 4. Товчийг 4 удаа дарвал мөхөөлдөс гарна!');confetti(60)}
+  else if(v===2){inp.className='no';fb('bmFb',false,'😮 Буман ч гэсэн 2 гэж таасан… тэгээд мухлагт баригдсан! Эхлээд 25 × 3-ыг бод.')}
+  else{inp.className='no';fb('bmFb',false,'🤔 Алхам алхмаар: 25 × 3 = 75, дараа нь 75 − 73 = ?, түүн дээр 2 нэм.')}};
+$('bmIn').addEventListener('keydown',e=>{if(e.key==='Enter')$('bmChk').click()});
+document.querySelectorAll('.gl').forEach(g=>g.onclick=()=>g.classList.toggle('on'));
+
+/* ================= 4. Бодит уу, зохиомол уу? ================= */
+const SORT=[
+  ['🚀','Сансрын хөлөг',0,'Сансрын хөлөг бодитоор байдаг — сансрын нисгэгчид түүгээр нисдэг.'],
+  ['♟️','Чулуун тоглоом',0,'Хүүхдүүд чулуугаар тоглодог нь бодит зүйл (х.97, Батын жишээ).'],
+  ['🏙️','Хот',0,'Хот бол бидний амьдардаг бодит газар.'],
+  ['📚','Ном',0,'Ном бодитоор байдаг — яг одоо чиний ширээн дээр байна!'],
+  ['🍦','Мөхөөлдөс',0,'Мөхөөлдөс бодит — дэлгүүрээс авч иддэг.'],
+  ['🏫','Сургууль',0,'Сургууль бол бодит газар.'],
+  ['🛏️','Буман хөнжилдөө хэвтээд маргаснаа бодов',0,'Хүн хэвтээд бодол болох нь амьдралд байдаг үйл явдал.'],
+  ['👽','Харь гаргийн хүү',1,'Харь гаргийн хүнийг хэн ч хараагүй — уран сэтгэмж.'],
+  ['🌟','Хот, хүмүүстэй Цолмон гараг',1,'Цолмон гараг дээр хот, хүмүүс байдаггүй — зохиолчийн төсөөлөл.'],
+  ['🗣️','Нүд, ам, гартай ярьдаг мухлаг',1,'Мухлаг ярьж, гараараа хүн барьдаггүй — уран сэтгэмж.'],
+  ['🔘','Товч дармагц ширээ, хоол бий болдог',1,'Ийм шидэт товч амьдрал дээр байдаггүй.'],
+  ['🦠','«Залхуу, худалч» өвчний нян',1,'Залхуурал нянгаас үүсдэггүй — зохиолчийн шог санаа.']
+];
+let srtSel=null,srtN=0;
+function srtBuild(){srtSel=null;srtN=0;$('srtPool').innerHTML='';$('bkt0').innerHTML='';$('bkt1').innerHTML='';fb('srtFb',null,'💡 Асуулт: <b>амьдрал дээр байдаг уу?</b>');srtScore();
+  shuffle(SORT.map((s,i)=>i)).forEach(i=>{const s=SORT[i],c=document.createElement('div');c.className='chip';c.draggable=true;c.dataset.i=i;c.innerHTML='<span class="e">'+s[0]+'</span> '+s[1];
+    c.onclick=ev=>{ev.stopPropagation();if(c.parentNode!==$('srtPool'))return;document.querySelectorAll('#srtPool .chip').forEach(x=>x.classList.remove('sel'));c.classList.add('sel');srtSel=c};
+    c.addEventListener('dragstart',ev=>{srtSel=c;try{ev.dataTransfer.setData('text/plain',String(i))}catch(e){}});
+    $('srtPool').appendChild(c)})}
+function srtScore(){$('srtScore').textContent='✓ '+srtN+' / '+SORT.length}
+function srtPlace(b){const c=srtSel;if(!c||c.parentNode!==$('srtPool'))return;const s=SORT[+c.dataset.i];
+  if(s[2]===b){c.classList.remove('sel');c.classList.add('okc');c.draggable=false;$('bkt'+b).appendChild(c);flash(c,'pop');srtN++;srtScore();fb('srtFb',true,'✅ '+s[3]);srtSel=null;
+    if(srtN===SORT.length){fb('srtFb',true,'🌟 Гайхалтай! Бүгдийг зөв ялгалаа. Чи уран сэтгэмжийн мөрдөгч боллоо!');confetti(140)}}
+  else{flash(c,'shake');fb('srtFb',false,'🤔 Дахин бодоорой: «'+s[1]+'» амьдрал дээр '+(b===0?'үнэхээр байдаг уу?':'байхгүй гэж үү?'))}}
+document.querySelectorAll('.basket').forEach(bk=>{const b=+bk.dataset.b;bk.onclick=()=>srtPlace(b);
+  bk.addEventListener('dragover',e=>{e.preventDefault();bk.classList.add('hot')});bk.addEventListener('dragleave',()=>bk.classList.remove('hot'));
+  bk.addEventListener('drop',e=>{e.preventDefault();bk.classList.remove('hot');srtPlace(b)})});
+$('srtReset').onclick=srtBuild;srtBuild();
+
+/* ================= 5. Үйл явдлын уул ================= */
+const MT=[
+  {k:'🌅 Эхлэл',g:'Эхлэл',pos:[1,60],t:'🏠 Буман найзтайгаа маргана. Шөнө нь харь гаргийн хүү ирж, түүнийг аялалд урина.'},
+  {k:'🚀 Өрнөл',g:'Гол',pos:[19.5,33],t:'🍦 Цолмон гарагт Буман худлаа ярьж, бодлогыг буруу бодоод мухлагт баригдана.'},
+  {k:'🔥 Оргил',g:'Гол',pos:[40.7,0],t:'🔥 Буцах замд нь бөөн гал ойртоно. Буман дүрмээ уншаагүй тул сандарна!'},
+  {k:'🙏 Тайлал',g:'Гол',pos:[61.9,33],t:'🙏 Буман гэмээ ухаарч, сайн сурна гэж амлахад хөлөг замаа өөрчилнө.'},
+  {k:'🌙 Төгсгөл',g:'Төгсгөл',pos:[80.4,60],t:'🎓 Бумангийн «өвчин» эдгэрч, тэр Цолмон гарагт эрдэм сурахаар шийднэ.'}
+];
+let mtSel=null,mtN=0;
+function mtBuild(){mtSel=null;mtN=0;const m=$('mtn');m.classList.remove('done');m.querySelectorAll('.slot').forEach(s=>s.remove());$('mtPool').innerHTML='';
+  MT.forEach((s,i)=>{const d=document.createElement('div');d.className='slot';d.dataset.i=i;d.style.left=s.pos[0]+'%';d.style.top=s.pos[1]+'%';
+    d.innerHTML='<div class="sl">'+s.k+'</div><div class="sc">❔</div><div class="g3">Сурах бичигт: '+s.g+'</div>';d.onclick=()=>mtPlace(d);m.appendChild(d)});
+  shuffle(MT.map((s,i)=>i)).forEach(i=>{const c=document.createElement('div');c.className='mcard';c.dataset.i=i;c.textContent=MT[i].t;
+    c.onclick=()=>{document.querySelectorAll('.mcard').forEach(x=>x.classList.remove('sel'));c.classList.add('sel');mtSel=c};$('mtPool').appendChild(c)});
+  $('mtPool').style.display='flex';$('lkBox').classList.remove('show');
+  fb('mtFb',null,'👆 Картаа сонгоод уулын зөв шат дээр дараарай.')}
+function mtPlace(slot){if(!mtSel||slot.classList.contains('fill'))return;
+  if(mtSel.dataset.i===slot.dataset.i){slot.classList.add('fill');slot.querySelector('.sc').textContent=mtSel.textContent;flash(slot,'pop');mtSel.remove();mtSel=null;mtN++;
+    if(mtN===MT.length){$('mtn').classList.add('done');fb('mtFb',true,'🏔️ Уулын оргилд хүрлээ! Сурах бичигт: <b>Эхлэл → Гол → Төгсгөл</b>. Одоо холбох үгсийг ялгая!');confetti(120);setTimeout(lkStart,1400)}
+    else fb('mtFb',true,'✅ Зөв! Үлдсэн '+(MT.length-mtN)+' карт.')}
+  else{flash(mtSel,'shake');flash(slot,'shake');fb('mtFb',false,'🤔 Энэ шат биш. Үйл явдал юунаас эхэлж, хамгийн аймшигтай мөч хаана байна вэ?')}}
+$('mtReset').onclick=mtBuild;
+const LK=[['Эрт урьд цагт',0],['Тэгээд',1],['Эцэст нь',2],['Анх',0],['Гэтэл',1],['Ингээд',2],['Дараа нь',1],['Эхлээд',0],['Төгсгөлд нь',2],['Харин',1]];
+const LKN=['Эхлэл','Гол','Төгсгөл'];
+let lkOrder=[],lkI=0,lkOk=0,lkLock=false;
+function lkStart(){lkOrder=shuffle(LK);lkI=0;lkOk=0;lkLock=false;$('mtPool').style.display='none';$('lkBox').classList.add('show');$('lkScore').textContent='0 / '+LK.length;$('lkWord').textContent=lkOrder[0][0];fb('mtFb',null,'🔗 Энэ холбох үгийг үлгэрийн аль хэсэгт хэрэглэх вэ? (х.99)')}
+$('mtLinkBtn').onclick=()=>{if($('lkBox').classList.contains('show')&&mtN<MT.length){$('lkBox').classList.remove('show');$('mtPool').style.display='flex';fb('mtFb',null,'👆 Картаа сонгоод уулын зөв шат дээр дараарай.')}else lkStart()};
+document.querySelectorAll('#lkBox [data-l]').forEach(b=>b.onclick=()=>{if(lkLock||lkI>=lkOrder.length)return;const w=lkOrder[lkI],a=+b.dataset.l;
+  if(a===w[1]){lkOk++;fb('mtFb',true,'✅ «'+w[0]+'» — '+LKN[w[1]]+' хэсэгт хэрэглэнэ.')}else{flash($('lkWord'),'shake');fb('mtFb',false,'❌ «'+w[0]+'» нь '+LKN[w[1]]+' хэсэгт хэрэглэгддэг.')}
+  lkI++;$('lkScore').textContent=lkOk+' / '+LK.length;lkLock=true;
+  setTimeout(()=>{lkLock=false;if(lkI<lkOrder.length){$('lkWord').textContent=lkOrder[lkI][0];flash($('lkWord'),'pop')}else{$('lkWord').textContent='🏆 '+lkOk+' / '+LK.length;fb('mtFb',true,'🎉 Холбох үгсийг дуусгалаа! Эдгээрийг үлгэр зохиохдоо хэрэглээрэй.');if(lkOk>=8)confetti(90)}},1100)});
+mtBuild();
+
+/* ================= 6. Үлгэрийн шоо ================= */
+const DICE=[
+  {k:'h',lbl:'🦸 Баатар',faces:[['🧔','Ядуу түлээчин','ядуу түлээчин'],['👦','Ах дүү хоёр','ах дүү хоёр'],['🦅','Бяцхан бүргэд','бяцхан бүргэд'],['👽','Харь гаргийн хүү','харь гаргийн хүү'],['🐺','Хурмастын чоно','хурмастын чоно'],['👧','Зоригтой охин','зоригтой охин']]},
+  {k:'p',lbl:'🗺️ Газар',faces:[['🌾','Уудам тал нутаг','уудам тал нутагт'],['☁️','Тэнгэрийн үүлэн ордон','тэнгэрийн үүлэн ордонд'],['🌲','Өтгөн ой','өтгөн ойд'],['💧','Цөөрмийн эрэг','цөөрмийн эрэгт'],['⛰️','Өндөр хавцал','өндөр хавцалд'],['🌟','Алс холын од','алс холын одонд']]},
+  {k:'i',lbl:'✨ Шидэт эд зүйл',faces:[['🪓','Алтан сүх','алтан сүх'],['🐎','Нисдэг морь','нисдэг морь'],['🏺','Бирдийн лонх','хүсэл биелүүлдэг бирдийн лонх'],['🔘','Шидэт товчлуур','шидэт товчлуур'],['📦','Хэл хөрвүүлэгч хайрцаг','бүх хэлийг хөрвүүлдэг хайрцаг'],['🔭','Далдыг харагч дуран','далдыг харагч дуран']]},
+  {k:'b',lbl:'⚡ Бэрхшээл',faces:[['🌊','Сүх нь усанд унав','сүх нь гараас мултарч усанд унажээ'],['🧭','Замаа төөрөв','замаа төөрчихжээ'],['🔥','Гал ойртож байна','өмнөөс нь бөөн гал ойртон иржээ'],['🤥','Худлаа хэлчихэв','найздаа худлаа хэлчихжээ'],['🌪️','Хар шуурга','хар шуурга дэгдэж эхэлжээ'],['😠','Шунахай ах','шунахай ах нь бүх юмыг булаах гэжээ']]}
+];
+const MORALS=['🤝 Найз нөхөрлөл','🦁 Эрэлхэг зориг','😴 Залхуурал муу','💞 Эцэг эхийн ачлал','⚖️ Шударга байдал','🙅 Шунахай бүү бай'];
+let D=Object.assign({h:0,p:2,i:0,b:0,lock:{},moral:''},jget('mk8_dice',{}));if(!D.lock)D.lock={};
+function face(k,i){const d=DICE.find(x=>x.k===k);return d.faces[(i|0)%d.faces.length]}
+function dSave(){jset('mk8_dice',D)}
+function dRender(){DICE.forEach(d=>{const f=face(d.k,D[d.k]);const cb=$('cube_'+d.k);cb.querySelector('.ce').textContent=f[0];cb.querySelector('.cn').textContent=f[1];cb.classList.toggle('locked',!!D.lock[d.k])});
+  document.querySelectorAll('.moral').forEach(m=>m.classList.toggle('on',m.dataset.m===D.moral));
+  const H=face('h',D.h),P=face('p',D.p),I=face('i',D.i),B=face('b',D.b);
+  $('seed').innerHTML='🌱 <b>Үлгэрийн үр:</b> Эрт урьд цагт <b>'+P[2]+'</b> <b>'+H[2]+'</b> амьдардаг байжээ. Нэг өдөр <b>'+B[2]+'</b>. Гэтэл <b>'+I[2]+'</b>…'+(D.moral?' <span style="white-space:nowrap">· Сургамж: <b>'+D.moral+'</b></span>':'')}
+(()=>{DICE.forEach(d=>{const w=document.createElement('div');w.className='die';w.innerHTML='<div class="dl">'+d.lbl+'</div><div class="cube" id="cube_'+d.k+'" title="Дарж түгжих"><div class="ce"></div><div class="cn"></div></div>';
+  $('dice').appendChild(w);w.querySelector('.cube').onclick=()=>{D.lock[d.k]=!D.lock[d.k];dSave();dRender()}});
+  MORALS.forEach(m=>{const b=document.createElement('button');b.className='moral';b.dataset.m=m;b.textContent=m;b.onclick=()=>{D.moral=D.moral===m?'':m;dSave();dRender()};$('morals').appendChild(b)});
+  dRender()})();
+let rolling=false;
+$('rollBtn').onclick=()=>{if(rolling)return;const free=DICE.filter(d=>!D.lock[d.k]);if(!free.length){$('seed').innerHTML='🔒 Бүх шоо түгжээтэй байна. Шоон дээр дарж түгжээг тайлаарай.';return}
+  rolling=true;free.forEach(d=>flash($('cube_'+d.k),'roll'));let n=0;
+  const iv=setInterval(()=>{free.forEach(d=>{const f=d.faces[ri(d.faces.length)],cb=$('cube_'+d.k);cb.querySelector('.ce').textContent=f[0];cb.querySelector('.cn').textContent=f[1]});
+    if(++n>10){clearInterval(iv);free.forEach(d=>{let v=ri(d.faces.length);if(v===D[d.k])v=(v+1+ri(d.faces.length-1))%d.faces.length;D[d.k]=v});dSave();dRender();rolling=false;confetti(40)}},85)};
+
+/* ================= 7. Үлгэр зохиох ================= */
+const LINKS=[['Эрт урьд цагт',0],['Эхлээд',0],['Анх',0],['Тэгээд',1],['Дараа нь',1],['Гэтэл',1],['Харин',1],['Мөн',1],['Эцэст нь',2],['Ингээд',2],['Сүүлд нь',2]];
+let W=Object.assign({title:'',author:'',parts:['','',''],bookId:null},jget('mk8_draft',{}));if(!Array.isArray(W.parts))W.parts=['','',''];
+let lastTA=$('wP0');
+const wc=s=>String(s).trim().split(/\s+/).filter(Boolean).length;
+function wSave(){jset('mk8_draft',W)}
+$('wTitle').value=W.title;$('wAuthor').value=W.author;
+[0,1,2].forEach(i=>{const ta=$('wP'+i);ta.value=W.parts[i]||'';ta.addEventListener('input',()=>{W.parts[i]=ta.value;wSave();wCheck()});ta.addEventListener('focus',()=>{lastTA=ta})});
+$('wTitle').addEventListener('input',e=>{W.title=e.target.value;wSave();wCheck()});
+$('wAuthor').addEventListener('input',e=>{W.author=e.target.value;wSave()});
+LINKS.forEach(([w,p])=>{const b=document.createElement('button');b.className='lchip e'+p;b.textContent=w;b.title=['Эхлэл','Гол','Төгсгөл'][p]+' хэсэгт';b.onclick=()=>insertText(lastTA,w+' ');$('wLinks').appendChild(b)});
+function insertText(ta,t){const s=ta.selectionStart==null?ta.value.length:ta.selectionStart,e=ta.selectionEnd==null?s:ta.selectionEnd;const before=ta.value.slice(0,s);const pre=(before&&!/\s$/.test(before))?' ':'';
+  ta.value=before+pre+t+ta.value.slice(e);const pos=s+pre.length+t.length;ta.focus();try{ta.setSelectionRange(pos,pos)}catch(x){}ta.dispatchEvent(new Event('input'))}
+function starters(){const H=face('h',D.h),P=face('p',D.p),I=face('i',D.i),B=face('b',D.b);
+  return['Эрт урьд цагт '+P[2]+' '+H[2]+' амьдардаг байжээ. ','Нэг өдөр '+B[2]+'. Гэтэл '+I[2]+' ','Эцэст нь '+H[2]+' ']}
+document.querySelectorAll('[data-start]').forEach(b=>b.onclick=()=>{const i=+b.dataset.start,ta=$('wP'+i);lastTA=ta;insertText(ta,starters()[i])});
+function wRefresh(){const H=face('h',D.h),P=face('p',D.p),I=face('i',D.i),B=face('b',D.b);
+  $('wDice').innerHTML=[H,P,I,B].map(f=>'<div><span class="e">'+f[0]+'</span> '+esc(f[1])+'</div>').join('')+(D.moral?'<div style="grid-column:1/-1">🎯 '+esc(D.moral)+'</div>':'');
+  $('wP0').placeholder='Эрт урьд цагт '+P[2]+' '+H[2]+'…';$('wP1').placeholder='Нэг өдөр '+B[2]+'. Гэтэл…';$('wP2').placeholder='Эцэст нь… Ингээд…';wCheck()}
+function wCheck(){const n=W.parts.map(wc);[0,1,2].forEach(i=>{const e=$('wc'+i);e.textContent=n[i]+' үг';e.classList.toggle('good',n[i]>=8)});
+  const all=W.parts.join(' ').toLowerCase(),I=face('i',D.i);const key=I[2].split(' ').slice(-1)[0].toLowerCase();
+  const C=[[W.title.trim().length>0,'Үлгэртээ нэр өгсөн'],[n.every(x=>x>=8),'Эхлэл, гол, төгсгөлтэй (тус бүр ≥ 8 үг)'],[LINKS.some(([w])=>all.includes(w.toLowerCase())),'Холбох үг хэрэглэсэн'],[all.includes(key),'Шидэт эд зүйл ('+I[1].toLowerCase()+') орсон'],[!!D.moral&&n[2]>=5,'Сургамжтай төгсгөл']];
+  $('wChk').innerHTML=C.map(([ok,t])=>'<li class="'+(ok?'ok':'')+'"><span class="bx">'+(ok?'✓':'')+'</span>'+esc(t)+'</li>').join('');
+  $('wTotal').textContent='📏 Нийт '+(n[0]+n[1]+n[2])+' үг · ✓ '+C.filter(c=>c[0]).length+'/5'}
+function getBook(){const b=jget('mk8_book',[]);return Array.isArray(b)?b:[]}
+$('wBook').onclick=()=>{if(!W.parts.some(p=>p.trim())){flash($('wBook'),'shake');return}
+  const book=getBook();const tale={id:W.bookId||('t'+Date.now()),title:W.title.trim()||'Нэргүй үлгэр',author:W.author.trim(),parts:W.parts.slice(),dice:{h:D.h,p:D.p,i:D.i,b:D.b},moral:D.moral,stars:0,rub:[-1,-1,-1,-1,-1]};
+  const k=book.findIndex(t=>t.id===tale.id);if(k>=0){tale.stars=book[k].stars||0;tale.rub=book[k].rub||tale.rub;book[k]=tale;gIdx=k}else{book.push(tale);gIdx=book.length-1}
+  W.bookId=tale.id;wSave();jset('mk8_book',book);
+  $('mPage').innerHTML=spreadHTML(tale,gIdx+1);$('modal').classList.add('show');confetti(110)};
+$('wNew').onclick=()=>{if(W.parts.some(p=>p.trim())&&!W.bookId&&!confirm('Энэ үлгэр номонд ороогүй байна. Устгаад шинээр эхлэх үү?'))return;
+  W={title:'',author:'',parts:['','',''],bookId:null};wSave();$('wTitle').value='';$('wAuthor').value='';[0,1,2].forEach(i=>$('wP'+i).value='');wCheck();$('wP0').focus()};
+$('mClose').onclick=()=>$('modal').classList.remove('show');
+$('mGo').onclick=()=>{$('modal').classList.remove('show');go(slides.findIndex(s=>s.contains($('gPage'))))};
+$('modal').onclick=e=>{if(e.target===$('modal'))$('modal').classList.remove('show')};
+
+/* ================= 8. Үлгэрийн цаг ================= */
+const SAMPLE={id:'sample',sample:true,title:'Бүргэд ба шидэт дуран',author:'Жишээ үлгэр',moral:'🦁 Эрэлхэг зориг',dice:{h:2,p:4,i:5,b:4},stars:0,rub:[-1,-1,-1,-1,-1],
+  parts:['Эрт урьд цагт өндөр хавцалд бяцхан бүргэд ээжтэйгээ амьдардаг байжээ. Тэр нисэж сураагүй тул үүрнээсээ доош харахаас ч айдаг байлаа.',
+    'Нэг өдөр хар шуурга дэгдэж, ээж нь буцаж ирсэнгүй. Гэтэл үүрэнд нь далдыг харагч дуран унаж иржээ. Бяцхан бүргэд дурангаар харвал ээж нь холын хадан дээр далавчаа гэмтээгээд хүлээж байх ажээ. Бүргэд айснаа мартаж, анх удаа далавчаа дэлгэн нисчээ.',
+    'Эцэст нь тэр ээжийгээ олж, хамтдаа үүрэндээ буцжээ. Ингээд бяцхан бүргэд зоригтой хүн айдсаа ялдаг гэдгийг ойлгожээ.']};
+const RUB=['Үлгэртээ нэр өгсөн үү?','Эхлэл, гол, төгсгөлтэй юу?','Хүүрнэн бичсэн үү?','Зөв бичгийн алдаагүй юу?','Сургамжтай байсан уу?'];
+const LV=['Маш сайн','Сайн','Дунд'];
+let gIdx=0;
+function spreadHTML(t,no){const d=t.dice||{},H=face('h',d.h),P=face('p',d.p),I=face('i',d.i);
+  const txt=(t.parts||[]).filter(p=>String(p).trim()).map((p,i)=>'<p'+(i===0?' class="first"':'')+'>'+esc(p)+'</p>').join('')||'<p class="muted">Үлгэр хоосон байна…</p>';
+  return '<div class="pg left"><div class="pgscene"><span>'+P[0]+'</span><span class="big">'+H[0]+'</span><span>'+I[0]+'</span></div><div class="pgtitle">'+esc(t.title||'Нэргүй үлгэр')+'</div>'+(t.author?'<div class="pgauth">✍️ '+esc(t.author)+'</div>':'')+(t.moral?'<div class="pgmoral">'+esc(t.moral)+'</div>':'')+'</div>'+
+    '<div class="pg right"><div class="pgtext">'+txt+'</div><div class="pgno">✦ '+(no||1)+' ✦</div></div>'}
+function gList(){const b=getBook();return b.length?b:[SAMPLE]}
+function gSaveTale(t){if(t.sample)return;const b=getBook(),k=b.findIndex(x=>x.id===t.id);if(k>=0){b[k]=t;jset('mk8_book',b)}}
+function gRender(){const L=gList();gIdx=Math.max(0,Math.min(L.length-1,gIdx));const t=L[gIdx];
+  $('gPage').innerHTML=spreadHTML(t,gIdx+1);$('gNum').textContent=(gIdx+1)+' / '+L.length;$('gPrev').disabled=gIdx===0;$('gNext').disabled=gIdx===L.length-1;
+  $('gStars').textContent=t.stars||0;
+  const best=L.reduce((a,x)=>(x.stars||0)>(a.stars||0)?x:a,L[0]);$('gLeader').textContent=(best&&best.stars>0&&L.length>1)?'🏆 Тэргүүлж буй: «'+best.title+'» ('+best.stars+' ⭐)':(t.sample?'Жишээ үлгэр — номонд үлгэр нэмэгдээгүй байна':'');
+  const r=t.rub||[-1,-1,-1,-1,-1];
+  $('gRub').innerHTML=RUB.map((q,i)=>'<div class="rr"><div class="rq">'+(i+1)+'. '+q+'</div><div class="lv">'+LV.map((l,j)=>'<button data-q="'+i+'" data-v="'+j+'" class="'+(r[i]===j?'on':'')+'">'+l+'</button>').join('')+'</div></div>').join('');
+  $('gRub').querySelectorAll('button').forEach(b=>b.onclick=()=>{const q=+b.dataset.q,v=+b.dataset.v;t.rub=t.rub||[-1,-1,-1,-1,-1];t.rub[q]=t.rub[q]===v?-1:v;gSaveTale(t);gRender();if(t.rub.every(x=>x===0))confetti(90)})}
+$('gPrev').onclick=()=>{gIdx--;gRender()};$('gNext').onclick=()=>{gIdx++;gRender()};
+$('gVote').onclick=()=>{const L=gList(),t=L[gIdx];t.stars=(t.stars||0)+1;gSaveTale(t);gRender();flash($('gStarBox'),'bump');confetti(25)};
+$('gUnvote').onclick=()=>{const L=gList(),t=L[gIdx];t.stars=Math.max(0,(t.stars||0)-1);gSaveTale(t);gRender()};
+
+/* ================= 9. Дүгнэлт ================= */
+$('rHint').onclick=()=>$('rHintA').classList.toggle('show');
+(()=>{const PH=['🌑','🌓','🌕'];const M=jget('mk8_moons',[0,0,0]);
+  document.querySelectorAll('#moons [data-m]').forEach(b=>{const i=+b.dataset.m;b.textContent=PH[M[i]||0];
+    b.onclick=()=>{M[i]=((M[i]||0)+1)%3;b.textContent=PH[M[i]];flash(b,'pop');jset('mk8_moons',M);if(M.every(x=>x===2))confetti(120)}})})();
+
+/* ================= Confetti (golden stars) ================= */
+const cf=$('confetti'),cfx=cf.getContext('2d');let parts=[],cRun=false;
+function confetti(n){cf.width=innerWidth;cf.height=innerHeight;const cols=['#f6c945','#ffe9a3','#c39bff','#e2557f','#4fd1bf','#ffffff'];
+  for(let i=0;i<n;i++)parts.push({x:innerWidth/2+rnd(-180,180),y:innerHeight*.45,vx:rnd(-7,7),vy:-rnd(4,17),s:rnd(6,12),c:cols[i%6],r:rnd(0,6),life:130});
+  if(!cRun){cRun=true;requestAnimationFrame(cStep)}}
+function starPath(c,s){c.beginPath();for(let i=0;i<10;i++){const r=i%2?s*.45:s,a=i*Math.PI/5-Math.PI/2;c.lineTo(Math.cos(a)*r,Math.sin(a)*r)}c.closePath()}
+function cStep(){cfx.clearRect(0,0,cf.width,cf.height);parts.forEach(p=>{p.vy+=.38;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.r+=.12;p.life--;cfx.save();cfx.translate(p.x,p.y);cfx.rotate(p.r);cfx.globalAlpha=Math.min(1,p.life/40);cfx.fillStyle=p.c;starPath(cfx,p.s);cfx.fill();cfx.restore()});
+  parts=parts.filter(p=>p.life>0&&p.y<cf.height+40);if(parts.length)requestAnimationFrame(cStep);else{cRun=false;cfx.clearRect(0,0,cf.width,cf.height)}}
+
+/* ---------- Start ---------- */
+go(0);
+</script>
+</body>
+</html>
